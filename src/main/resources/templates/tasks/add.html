@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+  <meta charset="UTF-8" />
+  <title th:text="${title}">missing title</title>
+</head>
+<body>
+<h1 th:text="${title}"></h1>
+
+<form method="POST">
+  <input type="text" name="commentName" />
+  <input type="submit" value="Add Comment" />
+</form>
+
+</body>
+</html>

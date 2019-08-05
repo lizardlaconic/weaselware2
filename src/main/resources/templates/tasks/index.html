@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+  <meta charset="UTF-8" />
+  <title th:text="${title}">missing title</title>
+</head>
+<body>
+  <h1 th:text="${title}"></h1>
+
+  <p th:unless="${comments} and ${comments.size()}">NO TASKS</p>
+
+  <a href="/tasks/add">Add Comment</a>
+
+  <ul>
+    <li th:each="comment : ${comments}" th:text="${comment}"></li>
+  </ul>
+</body>
+</html>
