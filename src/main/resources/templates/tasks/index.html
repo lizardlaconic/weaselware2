@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-<head>
-  <meta charset="UTF-8" />
-  <title th:text="${title}">missing title</title>
-</head>
-<body>
+<head th:replace="fragments :: head"></head>
+<body class="container">
   <h1 th:text="${title}"></h1>
+
+  <nav th:replace="fragments :: navigation"></nav>
 
   <p th:unless="${comments} and ${comments.size()}">NO TASKS</p>
 
-  <a href="/tasks/add">Add Comment</a>
-
-  <ul>
-    <li th:each="comment : ${comments}" th:text="${comment}"></li>
-  </ul>
+  <table class="table">
+    <form method="POST">
+    <tr><td>Comment</td><td>Extra Comment</td><td>Event</td></tr>
+    <tr th:each="comment : ${comments}">
+      <td th:text="${comment.comment}"></td>
+      <td th:text="${comment.extraComment}"></td>
+      <td th:text="${comment.event.name}"></td>
+      <!--obvious button will have to correspond to id eventually-->
+      <td><button class="btn btn-outline-info btn-sm" name="done"
+                  th:value="${comment.id}" th:text="${comment.id}">DONE</button></td>
+    </tr>
+    </form>
+  </table>
 </body>
 </html>

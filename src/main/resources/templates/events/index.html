@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+<body class="container">
+<h1 th:text="${title}"></h1>
+
+<nav th:replace="fragments :: navigation"></nav>
+
+<ul>
+  <li th:each="event : ${events}" th:text="${event.name}"></li>
+</ul>
+<a href="/event/add">Add Events</a>
+</body>
+</html>
