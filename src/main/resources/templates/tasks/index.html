@@ -1,18 +1,81 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-<head>
-  <meta charset="UTF-8" />
-  <title th:text="${title}">missing title</title>
-</head>
-<body>
+<head th:replace="fragments :: head"></head>
+<body class="container-fluid">
   <h1 th:text="${title}"></h1>
+
+  <nav th:replace="fragments :: navigation"></nav>
 
   <p th:unless="${comments} and ${comments.size()}">NO TASKS</p>
 
-  <a href="/tasks/add">Add Comment</a>
+  <!--this form needs ${comments} (taskDao)-->
+  <!--can return "done" ${comment.id}-->
+  <form action="/tasks/delete" method="POST">
+    <table class="table-bordered table-hover">
+      <tr><th>Comment</th><th>Extra Comment</th><th>Event</th></tr>
+      <tr th:each="comment : ${comments}">
+        <td th:text="${comment.comment}"></td>
+        <td th:text="${comment.extraComment}"></td>
+        <td th:text="${comment.event.name}"></td>
+        <!--obvious button will have to correspond to id eventually-->
+        <td><button class="btn btn-outline-info btn-sm" name="done"
+                      th:value="${comment.id}" th:text="${comment.id}"></button></td>
+      </tr>
+      <tr><td></td><td></td><td></td><td>
+        <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#newTask">
+          NEW</button></td>
+      </tr>
+    </table>
+  </form>
+  <p class="text-danger" th:errors="${task.comment}"></p>
+  <p class="text-danger" th:errors="${task.extraComment}"></p>
 
-  <ul>
-    <li th:each="comment : ${comments}" th:text="${comment}"></li>
-  </ul>
+  <!--pop up window-->
+  <div class="modal" id="newTask">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h4 class="modal-title">EDIT COMMENT</h4>
+        </div>
+
+        <div class="modal-body">
+          <!--form needs empty ${task}, ${eventTypes} (eventDao)-->
+          <!-- returns filled task, eventId-->
+          <form action = "/tasks" method="POST" style="max-width:600px;" th:object="${task}" >
+            <div class="form-group">
+              <label th:for="comment">Comment</label>
+              <input class="form-control" th:field="*{comment}" />
+            </div>
+            <div class="form-group">
+              <label th:for="extraComment">Extra Comment</label>
+              <input class="form-control" th:field="*{extraComment}" />
+            </div>
+            <div class="form-group">
+              <label th:for="event">Event</label>
+              <select name="eventId">
+                <option th:each="eventType : ${eventTypes}"
+                        th:text="${eventType.name}"
+                        th:value="${eventType.id}"></option>
+              </select>
+            </div>
+            <!--<input type="submit" class="btn btn-success" value="OK" />-->
+            <!--<button type="button" class="btn btn-success" value="Add Comment">ENTER</button>-->
+            <!--<button type="button" class="btn btn-danger" data-dismiss="modal">CANCEL</button>-->
+
+            <!--<div class="modal-footer">-->
+              <!--<button type="button" class="btn btn-success" data-dismiss="modal">ENTER</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">CANCEL</button>-->
+              <input type="submit" class="btn btn-success" value="OK" />
+              <!--<button type="button" class="btn btn-success" value="Add Comment">ENTER</button>-->
+              <button type="button" class="btn btn-danger" data-dismiss="modal">CANCEL</button>
+            <!--</div>-->
+         </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
