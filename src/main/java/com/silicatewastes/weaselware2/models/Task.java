@@ -61,6 +61,11 @@ public class Task {
     this.event = event;
   }
 
+  public void Clear() {
+    this.comment="";
+    this.extraComment="";
+  }
+
   /*public HotPotato getSpud() {
     return spud;
   }

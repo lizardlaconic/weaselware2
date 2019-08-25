@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,51 +30,52 @@ public class IndexController {
   @Autowired
   EventDao eventDao;
 
-  @RequestMapping(value = "")
+  @RequestMapping(value = "", method = RequestMethod.GET)
   public String index(Model model) {
     model.addAttribute("comments", taskDao.findAll());
     model.addAttribute("title", "Tasks");
+
+    model.addAttribute(new Task());
+    model.addAttribute("eventTypes", eventDao.findAll());
+
+    return "tasks/index";
+  }
+
+  @RequestMapping(value = "delete", method = RequestMethod.POST)
+  public String indexdelete(Model model, @RequestParam Integer done) {
+    taskDao.deleteById(done);
+    model.addAttribute("comments", taskDao.findAll());
+    model.addAttribute("title", "Tasks");
+
+    model.addAttribute(new Task());
+    model.addAttribute("eventTypes", eventDao.findAll());
 
     return "tasks/index";
   }
 
   @RequestMapping(value = "", method = RequestMethod.POST)
-  public String indexprocess(Model model, @RequestParam int done) {
-    taskDao.deleteById(done);
+  public String indexprocess(Model model,
+                             @ModelAttribute @Valid Task newTask, Errors errors,
+                             @RequestParam(value = "eventId", required = false) Integer eventId) {
 
-    model.addAttribute("comments", taskDao.findAll());
-    model.addAttribute("title", "Tasks");
-
-    return "tasks/index";
-  }
-
-  //just adding this for the sake of having everything from the tutorials.
-  //gut it out later, this is not at all how i want this to work.
-  @RequestMapping(value = "add", method = RequestMethod.GET)
-  public String displayAddCommentForm(Model model) {
-    model.addAttribute("title", "Add Comment");
-    model.addAttribute(new Task());
-    model.addAttribute("eventTypes", eventDao.findAll());
-
-    return "tasks/add";
-  }
-
-  //same, just for reference, trash this later
-  @RequestMapping(value = "add", method = RequestMethod.POST)
-  public String processAddCommentForm(@ModelAttribute @Valid Task newTask, Errors errors,
-                                      @RequestParam int eventId, Model model) {
-
-    if(errors.hasErrors()) {
-      //why don't i have to pass newTask back to the html? like it get add above?
-      model.addAttribute("title", "Add Comment");
-      model.addAttribute("eventTypes", eventDao.findAll());
-      return "tasks/add";
+    if(!errors.hasErrors()) {
+      Optional<Event> event = eventDao.findById(eventId);
+      newTask.setEvent(event.get());
+      taskDao.saveAndFlush(newTask);
+      taskDao.clear();
     }
 
-    Optional<Event> event = eventDao.findById(eventId);
-    newTask.setEvent(event.get());
-    taskDao.save(newTask);
-    return "redirect:";
+    //load up all tasks
+    List<Task> comments = taskDao.findAll();
+    model.addAttribute("comments", comments);
+    newTask.Clear();
+
+    model.addAttribute("title", "Tasks");
+
+    //why in the world do i not have to pass newTask back to the html?
+    model.addAttribute("eventTypes", eventDao.findAll());
+
+    return "tasks/index";
   }
 
   @RequestMapping(value = "event", method = RequestMethod.GET)
