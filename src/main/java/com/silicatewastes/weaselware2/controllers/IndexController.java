@@ -75,6 +75,8 @@ public class IndexController {
     //why in the world do i not have to pass newTask back to the html?
     model.addAttribute("eventTypes", eventDao.findAll());
 
+    /////
+
     return "tasks/index";
   }
 
